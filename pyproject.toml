@@ -1,0 +1,20 @@
+[project]
+name = "slm-router"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Pawan Eswaran", email = "pawaneswaran19012006@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.14.0",
+    "transformers>=5.16.1",
+]
+
+[project.scripts]
+slm-router = "slm_router:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
