@@ -12,6 +12,9 @@ dependencies = [
     "transformers>=5.16.1",
 ]
 
+[tool.uv]
+package = true
+
 [project.scripts]
 slm-router = "slm_router:main"
 
