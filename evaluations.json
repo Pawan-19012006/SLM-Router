@@ -1,0 +1,44 @@
+[
+  {
+    "timestamp": "2026-09-04 20:38:32",
+    "query": "What is 2 + 2?",
+    "predicted": "LOCAL",
+    "expected": "LOCAL",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-04 20:38:54",
+    "query": "Tell me a 500-word story about a dragon.",
+    "predicted": "LOCAL",
+    "expected": "CLOUD",
+    "correct": false
+  },
+  {
+    "timestamp": "2026-09-04 20:39:10",
+    "query": "Turn on the light.",
+    "predicted": "COMMAND",
+    "expected": "COMMAND",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-04 20:39:28",
+    "query": "Turn off the computer",
+    "predicted": "COMMAND",
+    "expected": "COMMAND",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-04 20:39:53",
+    "query": "Explain Black hole theory in detail like a story",
+    "predicted": "LOCAL",
+    "expected": "CLOUD",
+    "correct": false
+  },
+  {
+    "timestamp": "2026-09-04 20:40:23",
+    "query": "Open the application",
+    "predicted": "LOCAL",
+    "expected": "COMMAND",
+    "correct": false
+  }
+]
