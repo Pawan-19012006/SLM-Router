@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-MODEL_NAME = "HuggingFaceTB/SmolLM2-360M-Instruct" #model name from huggingface
+MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct" #model name from huggingface
 
 
 class SLM:
@@ -13,10 +13,13 @@ class SLM:
 
         print("SLM loaded.")
 
-    def generate(self, prompt, max_new_tokens=100):
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
+    def generate(self, prompt=None, messages=None, max_new_tokens=100, do_sample=False, **kwargs):
+        if messages is None:
+            if prompt is None:
+                raise ValueError("Either prompt or messages must be provided.")
+            messages = [
+                {"role": "user", "content": prompt}
+            ]
 
         inputs = self.tokenizer.apply_chat_template(
             messages,
@@ -27,7 +30,9 @@ class SLM:
 
         outputs = self.model.generate(
             **inputs,
-            max_new_tokens=max_new_tokens
+            max_new_tokens=max_new_tokens,
+            do_sample=do_sample,
+            **kwargs
         )
 
         input_length = inputs["input_ids"].shape[1]
