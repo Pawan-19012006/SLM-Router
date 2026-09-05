@@ -1,44 +1,23 @@
 [
   {
-    "timestamp": "2026-09-04 20:38:32",
-    "query": "What is 2 + 2?",
+    "timestamp": "2026-09-06 00:50:39",
+    "query": "Why do flamingos stand on one leg?",
     "predicted": "LOCAL",
     "expected": "LOCAL",
     "correct": true
   },
   {
-    "timestamp": "2026-09-04 20:38:54",
-    "query": "Tell me a 500-word story about a dragon.",
+    "timestamp": "2026-09-06 00:51:10",
+    "query": "Plan a three-day itinerary for exploring Kyoto during cherry blossom season.",
     "predicted": "LOCAL",
-    "expected": "CLOUD",
+    "expected": "COMMAND",
     "correct": false
   },
   {
-    "timestamp": "2026-09-04 20:39:10",
-    "query": "Turn on the light.",
-    "predicted": "COMMAND",
-    "expected": "COMMAND",
-    "correct": true
-  },
-  {
-    "timestamp": "2026-09-04 20:39:28",
-    "query": "Turn off the computer",
-    "predicted": "COMMAND",
-    "expected": "COMMAND",
-    "correct": true
-  },
-  {
-    "timestamp": "2026-09-04 20:39:53",
-    "query": "Explain Black hole theory in detail like a story",
+    "timestamp": "2026-09-06 00:51:14",
+    "query": "Plan a three-day itinerary for exploring Kyoto during cherry blossom season.",
     "predicted": "LOCAL",
     "expected": "CLOUD",
-    "correct": false
-  },
-  {
-    "timestamp": "2026-09-04 20:40:23",
-    "query": "Open the application",
-    "predicted": "LOCAL",
-    "expected": "COMMAND",
     "correct": false
   }
 ]
