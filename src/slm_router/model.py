@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct" #model name from huggingface
+MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct" #model name from huggingface
 
 
 class SLM:
