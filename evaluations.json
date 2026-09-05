@@ -19,5 +19,40 @@
     "predicted": "LOCAL",
     "expected": "CLOUD",
     "correct": false
+  },
+  {
+    "timestamp": "2026-09-06 02:19:56",
+    "query": "Set my phone brightness to 50 percent.",
+    "predicted": "COMMAND",
+    "expected": "COMMAND",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-06 02:20:29",
+    "query": "Draft a comprehensive five-year business strategy for a renewable-energy startup.",
+    "predicted": "CLOUD",
+    "expected": "CLOUD",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-06 02:20:56",
+    "query": "What is the difference between a comet and an asteroid?",
+    "predicted": "LOCAL",
+    "expected": "LOCAL",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-06 02:21:28",
+    "query": "Write a short thank-you note to my professor.",
+    "predicted": "LOCAL",
+    "expected": "LOCAL",
+    "correct": true
+  },
+  {
+    "timestamp": "2026-09-06 02:21:52",
+    "query": "Play some relaxing music.",
+    "predicted": "COMMAND",
+    "expected": "COMMAND",
+    "correct": true
   }
 ]
