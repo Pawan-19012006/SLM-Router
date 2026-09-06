@@ -27,7 +27,7 @@ class CloudHandler:
     ):
         # Reload env in case it changed at runtime
         load_dotenv()
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
+        self.api_key = os.getenv("GEMINI_API_KEY", "") if api_key is None else api_key
         self.model_name = model_name or os.getenv("CLOUD_MODEL", "gemini-2.5-flash")
         self.provider = provider
 
@@ -108,7 +108,6 @@ class CloudHandler:
 
         try:
             from google import genai
-            from google.genai import errors
 
             client = genai.Client(api_key=self.api_key)
 
@@ -135,6 +134,7 @@ class CloudHandler:
 
         except Exception as e:
             from google.genai import errors
+
             err_msg = self._sanitize_error_message(e)
 
             if isinstance(e, errors.ClientError):

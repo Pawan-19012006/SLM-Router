@@ -1,6 +1,6 @@
 """Core routing layer for SLM Router.
 
-Dispatches user queries to Local SLM, Command Executor, or Cloud LLM
+Dispatches user queries to Local SLM, Command Dynamic Confirmation, or Cloud LLM
 based on classifications from ClassifierV3, measuring precise execution telemetry.
 """
 
@@ -9,7 +9,6 @@ from typing import Any, Dict, Optional
 
 from slm_router.model import SLM
 from slm_router.classifier_v3 import ClassifierV3
-from slm_router.commands import CommandExecutor
 from slm_router.cloud import CloudHandler
 
 
@@ -18,24 +17,42 @@ LOCAL_ASSISTANT_SYSTEM_PROMPT = (
     "Provide a clear, direct, and well-structured answer to the user's request."
 )
 
+COMMAND_RESPONSE_PROMPT = (
+    "The user's request has already been classified as a COMMAND.\n\n"
+    "Read and understand what the user is asking to do.\n\n"
+    "Respond as though the requested command has been successfully performed.\n\n"
+    "Your response must:\n"
+    "- Clearly confirm that the requested command was performed successfully.\n"
+    "- Describe the action that was requested.\n"
+    "- Add one short, useful, context-specific note related to the command.\n"
+    "- Make the note dynamically relevant to the user's specific command.\n"
+    "- Do not use static/predefined responses.\n"
+    "- Do not mention classification.\n"
+    "- Do not explain your reasoning.\n"
+    "- Do not say that you are an AI.\n"
+    "- Keep the response concise and natural.\n\n"
+    "User command:\n"
+    "{original_query}"
+)
+
 
 class Router:
     """End-to-end request router uniting ClassifierV3, Local SLM generation,
 
-    Command Executor, and Cloud LLM dispatcher.
+    Dynamic Command Confirmation, and Cloud LLM dispatcher.
     """
 
     def __init__(
         self,
         slm: Optional[SLM] = None,
         classifier: Optional[ClassifierV3] = None,
-        command_executor: Optional[CommandExecutor] = None,
+        command_executor: Optional[Any] = None,
         cloud_handler: Optional[CloudHandler] = None,
     ):
-        # Single shared SLM instance (reused across classification and local generation)
+        # Single shared SLM instance (reused across classification, local generation, and command confirmation)
         self.slm = slm if slm is not None else SLM()
         self.classifier = classifier if classifier is not None else ClassifierV3(self.slm)
-        self.commands = command_executor if command_executor is not None else CommandExecutor()
+        self.commands = command_executor
         self.cloud = cloud_handler if cloud_handler is not None else CloudHandler()
 
     def route(self, query: str) -> Dict[str, Any]:
@@ -58,7 +75,7 @@ class Router:
                     "handler": 0.0,
                     "total": 0.0,
                 },
-                "details": {}
+                "details": {},
             }
 
         # Step 1: Automated V3 classification with measured timing
@@ -99,7 +116,7 @@ class Router:
         local_answer = self.slm.generate(
             messages=messages,
             max_new_tokens=256,
-            do_sample=False
+            do_sample=False,
         )
 
         return {
@@ -115,33 +132,45 @@ class Router:
             "details": {
                 "model": "Qwen/Qwen2.5-1.5B-Instruct",
                 "classification_token": raw_output,
-                "status": "COMPLETED_LOCALLY"
-            }
+                "status": "COMPLETED_LOCALLY",
+            },
         }
 
     def _handle_command(self, query: str, raw_output: str) -> Dict[str, Any]:
-        """Execute sandboxed simulated command."""
-        cmd_result = self.commands.execute(query)
+        """Dynamically generate action confirmation using the local SLM."""
+        messages = [
+            {
+                "role": "user",
+                "content": COMMAND_RESPONSE_PROMPT.format(original_query=query),
+            }
+        ]
+
+        command_answer = self.slm.generate(
+            messages=messages,
+            max_new_tokens=150,
+            do_sample=False,
+        )
+
+        clean_answer = command_answer.strip()
 
         return {
             "query": query,
             "route": "COMMAND",
-            "handler": "Command Executor",
-            "processing_type": "device",
-            "action": cmd_result.get("action", "Unknown Action"),
-            "status": cmd_result.get("status", "SIMULATED EXECUTION SUCCESS"),
-            "response": cmd_result.get("response", ""),
-            "result": cmd_result.get("response", ""),
-            "success": cmd_result.get("success", False),
-            "mode": "EXECUTED",
-            "model": "N/A (Rule Engine)",
+            "handler": "Local SLM",
+            "processing_type": "command",
+            "action": "Action Confirmation",
+            "status": "COMMAND EXECUTED",
+            "response": clean_answer,
+            "result": clean_answer,
+            "success": True,
+            "mode": "LOCAL",
+            "model": "Qwen/Qwen2.5-1.5B-Instruct",
             "details": {
-                "target": cmd_result.get("target"),
-                "state": cmd_result.get("state"),
-                "execution_details": cmd_result.get("details"),
-                "success": cmd_result.get("success", False),
-                "classification_token": raw_output
-            }
+                "model": "Qwen/Qwen2.5-1.5B-Instruct",
+                "classification_token": raw_output,
+                "status": "EXECUTED_DYNAMICALLY",
+                "success": True,
+            },
         }
 
     def _handle_cloud(self, query: str, raw_output: str) -> Dict[str, Any]:
@@ -165,7 +194,7 @@ class Router:
                 "complexity": cloud_result.get("complexity_assessment"),
                 "classification_token": raw_output,
                 "mode": cloud_result.get("mode", "LIVE"),
-            }
+            },
         }
 
     def _handle_unknown(self, query: str, raw_output: str) -> Dict[str, Any]:
@@ -183,6 +212,6 @@ class Router:
             "model": "N/A",
             "details": {
                 "classification_token": raw_output,
-                "status": "UNRESOLVED"
-            }
+                "status": "UNRESOLVED",
+            },
         }

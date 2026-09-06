@@ -240,7 +240,7 @@ def render_routing_decision(result: Dict[str, Any]):
         route_class = "command"
         icon = "⚙"
         explanation = "Safe device/action request detected"
-        handler_name = "Safe Action Engine"
+        handler_name = "Local SLM"
     elif route == "CLOUD":
         route_class = "cloud"
         icon = "☁"
@@ -285,7 +285,6 @@ def render_routing_decision(result: Dict[str, Any]):
 
 def render_answer_section(result: Dict[str, Any]):
     """Render prominent, clean Answer section."""
-    route = result.get("route", "UNKNOWN").upper()
     success = result.get("success", True)
     response_text = result.get("response", "")
 
@@ -295,20 +294,8 @@ def render_answer_section(result: Dict[str, Any]):
         st.error(response_text)
         return
 
-    if route == "COMMAND":
-        action = result.get("action", "Action Executed")
-        details = result.get("details", {})
-        exec_details = details.get("execution_details", "")
-
-        with st.container(border=True):
-            st.markdown(f"**Action:** `{action}`")
-            if exec_details:
-                st.caption(f"Details: {exec_details}")
-            st.markdown(response_text)
-    else:
-        # LOCAL or CLOUD output
-        with st.container(border=True):
-            st.markdown(response_text)
+    with st.container(border=True):
+        st.markdown(response_text)
 
 
 def main():

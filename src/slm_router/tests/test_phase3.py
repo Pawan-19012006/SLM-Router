@@ -9,13 +9,12 @@ if str(src_path) not in sys.path:
 
 from slm_router.cloud import CloudHandler
 from slm_router.router import Router
-from slm_router.commands import CommandExecutor
 
 
 class TestPhase3CloudAndRouter(unittest.TestCase):
 
     def test_mock_cloud_handler_default(self):
-        handler = CloudHandler(api_key="", mode="")
+        handler = CloudHandler(api_key="", mode="", model_name="gemini-2.5-flash")
         self.assertEqual(handler.mode, "mock")
         self.assertEqual(handler.get_api_status(), "Not Configured")
 
