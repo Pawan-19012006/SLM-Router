@@ -13,15 +13,22 @@ SLM Router classifies incoming natural language requests on-device using a Small
 git clone <repository-url>
 cd SLM-Router
 
-# 2. Install dependencies with uv
+# 2. Sync/install dependencies with uv
 uv sync
 
-# 3. Configure environment variables
+# 3. Download and cache the Qwen2.5-1.5B-Instruct model locally (one-time setup)
+uv run python -c "from slm_router.model import SLM; SLM()"
+
+# 4. Create the .env file from .env.example
 cp .env.example .env
 
-# 4. Launch the Streamlit application
+# 5. Add your Gemini API key in .env
+# Edit .env and set: GEMINI_API_KEY=your_actual_key
+
+# 6. Launch the Streamlit application
 uv run streamlit run app.py
 ```
+
 
 ---
 
@@ -136,48 +143,59 @@ On Windows (PowerShell):
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### 2. Clone and Synchronize Environment
+### 2. Clone and Synchronize Dependencies
 ```bash
 git clone <repository-url>
 cd SLM-Router
 uv sync
 ```
-`uv sync` will automatically create a virtual environment (`.venv`), install PyTorch, Transformers, Streamlit, `google-genai`, and install the `slm-router` package in editable mode.
+`uv sync` will create a virtual environment (`.venv`), install all required dependencies (PyTorch, Transformers, Streamlit, `google-genai`), and install the `slm-router` package in editable mode.
 
----
+### 3. Download and Cache the Local Model
+`uv sync` installs the Python dependencies but does not download the Hugging Face model weights. Run this one-time command to initialize the model using the project's device detection and cache it locally:
 
-## Environment Configuration
+```bash
+uv run python -c "from slm_router.model import SLM; SLM()"
+```
 
-Copy the sample environment file:
+- **First Run**: Automatically downloads `Qwen/Qwen2.5-1.5B-Instruct` (~3.1 GB) from Hugging Face.
+- **Local Caching**: The model is saved to your local Hugging Face cache directory and reused on all subsequent runs.
+- **Network Requirement**: Internet access is required during this initial download step.
+- **No Token Required**: No Hugging Face API token is needed for this public model (though unauthenticated downloads are subject to standard public rate limits).
+
+### 4. Configure Environment Variables
+Create your `.env` configuration file from the template:
+
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` to configure your settings:
+### 5. Add Your Gemini API Key
+Edit `.env` and insert your Google Gemini API key:
+
 ```env
-GEMINI_API_KEY=your-gemini-api-key-here
+GEMINI_API_KEY=your_actual_key
 CLOUD_MODEL=gemini-3.6-flash
 CLOUD_MODE=live
 ```
 
-### Settings Reference:
+#### Settings Reference:
 - `GEMINI_API_KEY`: Your Google AI Studio API key.
-  - If omitted or left empty, the router automatically falls back to safe **Mock Mode** without throwing exceptions.
-- `CLOUD_MODEL`: The target Gemini model name (defaults to `gemini-3.6-flash`).
+  - If left blank, the router automatically falls back to safe **Mock Mode** without throwing errors.
+- `CLOUD_MODEL`: The target Gemini model (defaults to `gemini-3.6-flash`).
 - `CLOUD_MODE`:
   - `live`: Dispatches cloud requests to Google Gemini via the official SDK.
-  - `mock`: Simulates cloud offloading locally without making network calls.
+  - `mock`: Simulates cloud offloading locally without making external network calls.
 
 > **Security Note**: Never commit your `.env` file. It is explicitly ignored by `.gitignore`.
 
----
+### 6. Launch the Application
+Start the Streamlit web interface:
 
-## Running the Application
-
-Launch the clean Streamlit interface:
 ```bash
 uv run streamlit run app.py
 ```
+
 
 For headless Linux servers or containerized deployments:
 ```bash
