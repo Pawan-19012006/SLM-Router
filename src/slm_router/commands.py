@@ -1,18 +1,11 @@
-"""Safe simulated command executor for SLM Router.
-
-Provides a safe in-memory command registry for demonstration purposes.
-DOES NOT execute arbitrary OS actions or system binaries.
-"""
+"""Simulated in-memory command executor. Does not execute OS commands."""
 
 import re
 from typing import Any, Dict
 
 
 class CommandExecutor:
-    """Safe, sandboxed demonstration command executor."""
-
     def __init__(self):
-        # In-memory simulated device/system states
         self.state: Dict[str, Any] = {
             "light": "OFF",
             "sprinkler": "OFF",
@@ -24,11 +17,12 @@ class CommandExecutor:
         }
 
     def execute(self, query: str) -> Dict[str, Any]:
-        """Parse query against the safe simulated command catalog and update simulated state."""
+        """Parse query and update simulated device state."""
         q = query.lower().strip()
 
-        # 1. Garden Sprinkler
+        # Sprinkler
         if "sprinkler" in q:
+
             duration_match = re.search(r"(\d+)\s*(minutes|minute|hours|hour|seconds|sec|min)\b", q)
             duration_str = duration_match.group(0) if duration_match else None
             is_turn_off = any(w in q for w in ["off", "stop", "disable", "shut"])
@@ -47,7 +41,7 @@ class CommandExecutor:
                 "response": f"Command executed successfully.\nAction: {action_desc}\nStatus: {target_state}\n{details}"
             }
 
-        # 2. Lighting
+        # Lighting
         if "light" in q or "lamp" in q:
             is_turn_off = any(w in q for w in ["off", "dim down", "extinguish"])
             target_state = "OFF" if is_turn_off else "ON"
@@ -63,7 +57,7 @@ class CommandExecutor:
                 "response": f"Command executed successfully.\nAction: {action_desc}\nStatus: {target_state}"
             }
 
-        # 3. Music / Audio Playback
+        # Music playback
         if any(w in q for w in ["music", "song", "track", "sonata", "play", "pause", "mute", "unmute"]):
             if "pause" in q or "stop" in q:
                 self.state["music"] = "PAUSED"
@@ -88,7 +82,7 @@ class CommandExecutor:
                 "response": f"Command executed successfully.\nAction: {action_desc}\nStatus: {self.state['music']}"
             }
 
-        # 4. Web Browser
+        # Browser
         if "browser" in q or "chrome" in q or "safari" in q:
             is_close = any(w in q for w in ["close", "quit", "exit", "shut"])
             target_state = "CLOSED" if is_close else "OPENED"
@@ -104,7 +98,7 @@ class CommandExecutor:
                 "response": f"Command executed successfully.\nAction: {action_desc}\nStatus: {target_state}"
             }
 
-        # 5. Screen Lock / Brightness / Display
+        # System controls
         if "lock" in q and "screen" in q:
             self.state["screen"] = "LOCKED"
             action_desc = "Lock system workstation"
@@ -133,7 +127,8 @@ class CommandExecutor:
                 "response": f"Command executed successfully.\nAction: {action_desc}\nStatus: {pct}%"
             }
 
-        # 6. Safe generic fallback for unregistered / unsupported commands
+        # Fallback for unregistered commands
+
         return {
             "success": False,
             "action": "Unregistered Device/System Action",

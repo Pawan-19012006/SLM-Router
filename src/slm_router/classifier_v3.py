@@ -71,9 +71,8 @@ Instructions:
 
 
 def extract_label(raw_output: str) -> str:
-    """Normalize output and accept ONLY an exact match for LOCAL, COMMAND, or CLOUD.
-    Returns 'UNKNOWN' if not an exact match. No substring matching is used.
-    """
+    """Accept only an exact match for LOCAL, COMMAND, or CLOUD."""
+
     if not raw_output:
         return "UNKNOWN"
 

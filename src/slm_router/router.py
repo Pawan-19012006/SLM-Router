@@ -1,8 +1,4 @@
-"""Core routing layer for SLM Router.
-
-Dispatches user queries to Local SLM, Command Dynamic Confirmation, or Cloud LLM
-based on classifications from ClassifierV3, measuring precise execution telemetry.
-"""
+"""Routes queries to Local SLM, simulated command handler, or Cloud LLM."""
 
 import time
 from typing import Any, Dict, Optional
@@ -37,11 +33,6 @@ COMMAND_RESPONSE_PROMPT = (
 
 
 class Router:
-    """End-to-end request router uniting ClassifierV3, Local SLM generation,
-
-    Dynamic Command Confirmation, and Cloud LLM dispatcher.
-    """
-
     def __init__(
         self,
         slm: Optional[SLM] = None,
@@ -49,8 +40,9 @@ class Router:
         command_executor: Optional[Any] = None,
         cloud_handler: Optional[CloudHandler] = None,
     ):
-        # Single shared SLM instance (reused across classification, local generation, and command confirmation)
+        # Reuse single SLM instance across classification and local generation
         self.slm = slm if slm is not None else SLM()
+
         self.classifier = classifier if classifier is not None else ClassifierV3(self.slm)
         self.commands = command_executor
         self.cloud = cloud_handler if cloud_handler is not None else CloudHandler()
@@ -78,12 +70,10 @@ class Router:
                 "details": {},
             }
 
-        # Step 1: Automated V3 classification with measured timing
         t_cls_start = time.perf_counter()
         route, raw_output = self.classifier.classify_with_raw(cleaned_query)
         cls_duration = time.perf_counter() - t_cls_start
 
-        # Step 2: Dispatch based on classification decision with measured timing
         t_handler_start = time.perf_counter()
         if route == "LOCAL":
             routed_result = self._handle_local(cleaned_query, raw_output)
@@ -112,12 +102,12 @@ class Router:
             {"role": "user", "content": query},
         ]
 
-        # Generate answer locally using the existing loaded model
         local_answer = self.slm.generate(
             messages=messages,
             max_new_tokens=256,
             do_sample=False,
         )
+
 
         return {
             "query": query,

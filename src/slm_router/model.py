@@ -3,11 +3,12 @@ from typing import Optional
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"  # model name from huggingface
+MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
 
 
 def get_default_device() -> torch.device:
-    """Safely detect the best available compute device with priority: CUDA -> MPS -> CPU."""
+    """Auto-detect CUDA, MPS, or fall back to CPU."""
+
     if torch.cuda.is_available():
         return torch.device("cuda")
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():

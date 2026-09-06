@@ -27,11 +27,9 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
 
     def test_default_cloud_model_is_gemini_3_6_flash(self):
         handler = CloudHandler(api_key="", mode="mock", model_name=None)
-        # Should default to gemini-3.6-flash
         self.assertEqual(handler.model_name, "gemini-3.6-flash")
         res = handler.handle("Explain black holes.")
         self.assertEqual(res["model"], "gemini-3.6-flash")
-
 
     def test_mock_cloud_handler_explicit_mode(self):
         handler = CloudHandler(api_key="dummy-key", mode="mock")
@@ -44,7 +42,6 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
 
     def test_live_cloud_handler_missing_key(self):
         handler = CloudHandler(api_key="", mode="live")
-        # Without key, defaults to mock
         self.assertEqual(handler.mode, "mock")
         res = handler.handle("Test query")
         self.assertTrue(res["success"])
@@ -54,10 +51,10 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
         self.assertEqual(handler.mode, "live")
         self.assertEqual(handler.get_api_status(), "Connected")
 
-        # Must not raise an exception; must return structured error
         res = handler.handle("Test query")
         self.assertFalse(res["success"])
         self.assertEqual(res["mode"], "ERROR")
+
         self.assertIn("Authentication Error", res["response"])
 
     def test_live_cloud_handler_success_mocked_gemini(self):
@@ -100,8 +97,8 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
         secret_key = "secret-production-gemini-key-12345"
         handler = CloudHandler(api_key=secret_key, mode="live")
         res = handler.handle("Test")
-        # Ensure the raw key is never in any string representation of the output
         self.assertNotIn(secret_key, str(res))
+
 
 
 if __name__ == "__main__":

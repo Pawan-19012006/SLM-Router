@@ -1,23 +1,13 @@
-"""Cloud LLM routing handler for SLM Router.
-
-Integrates with external Cloud LLM endpoints via the official Google Gemini
-Python SDK (`google-genai`), with resilient error handling and local mock fallback.
-"""
+"""Google Gemini cloud routing handler with mock fallback."""
 
 import os
 from typing import Any, Dict, Optional
 from dotenv import load_dotenv
 
-# Load environment variables from .env if present
 load_dotenv()
 
 
 class CloudHandler:
-    """Handles dispatching heavy or complex requests to Cloud LLM providers
-
-    using the Google Gemini Python SDK, or safe mock fallback.
-    """
-
     def __init__(
         self,
         model_name: Optional[str] = None,
@@ -25,21 +15,20 @@ class CloudHandler:
         api_key: Optional[str] = None,
         provider: str = "Google Gemini",
     ):
-        # Reload env in case it changed at runtime
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY", "") if api_key is None else api_key
         self.model_name = model_name or os.getenv("CLOUD_MODEL", "gemini-3.6-flash")
         self.provider = provider
 
-        # Resolve mode: live vs mock
         env_mode = (mode or os.getenv("CLOUD_MODE", "")).strip().lower()
         if not self.api_key or not self.api_key.strip():
-            # If GEMINI_API_KEY is missing, default to mock mode
+            # Default to mock mode if no API key is provided
             self.mode = "mock"
         elif env_mode == "mock":
             self.mode = "mock"
         else:
             self.mode = "live"
+
 
     @property
     def is_configured(self) -> bool:
@@ -116,10 +105,10 @@ class CloudHandler:
                 contents=query,
             )
 
-            # Extract generated text from response
             output_text = getattr(response, "text", None)
             if output_text is None:
                 output_text = str(response)
+
 
             return {
                 "handler": "Cloud LLM",

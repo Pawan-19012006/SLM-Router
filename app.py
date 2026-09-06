@@ -16,13 +16,12 @@ from slm_router.cloud import CloudHandler
 
 @st.cache_resource
 def get_router() -> Router:
-    """Load SLM and Router once in memory."""
     return Router()
 
 
 def inject_custom_css():
-    """Inject modern, dark, distraction-free product styling."""
     st.markdown("""
+
         <style>
         /* Modern font and dark palette */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -172,7 +171,6 @@ def inject_custom_css():
 
 
 def render_header(cloud_status: str):
-    """Render clean, minimalist app header."""
     st.markdown(f"""
         <div class='app-header'>
             <div class='app-title'>⚡ SLM ROUTER</div>
@@ -187,10 +185,9 @@ def render_header(cloud_status: str):
 
 
 def render_prompt_section(router: Router):
-    """Render the central prompt input section with sample pills."""
     st.markdown("### What would you like to do?")
 
-    # Compact sample pills
+    # Sample prompts
     p1, p2, p3 = st.columns(3)
     if p1.button("🌱 Turn on sprinkler", use_container_width=True):
         st.session_state.query_input = "Turn the garden sprinkler on for 15 minutes."
@@ -225,7 +222,6 @@ def render_prompt_section(router: Router):
 
 
 def render_routing_decision(result: Dict[str, Any]):
-    """Render ONE clean routing decision card."""
     route = result.get("route", "UNKNOWN").upper()
     success = result.get("success", True)
     status_label = "SUCCESS" if success else "ERROR"
@@ -284,7 +280,6 @@ def render_routing_decision(result: Dict[str, Any]):
 
 
 def render_answer_section(result: Dict[str, Any]):
-    """Render prominent, clean Answer section."""
     success = result.get("success", True)
     response_text = result.get("response", "")
 
@@ -307,27 +302,21 @@ def main():
 
     inject_custom_css()
     router = get_router()
-
-    # Determine Cloud API status safely
     cloud_status = router.cloud.get_api_status()
 
-    # State initialization
     if "result" not in st.session_state:
         st.session_state.result = None
     if "query_input" not in st.session_state:
         st.session_state.query_input = ""
 
-    # 1. Header
     render_header(cloud_status)
-
-    # 2. Prompt Section
     render_prompt_section(router)
 
-    # 3. Routing Decision & Answer
     if st.session_state.result:
         st.divider()
         render_routing_decision(st.session_state.result)
         render_answer_section(st.session_state.result)
+
 
 
 if __name__ == "__main__":

@@ -26,7 +26,6 @@ class TestRouterUnit(unittest.TestCase):
         )
 
     def test_local_query_reaches_local_handler(self):
-        """1. LOCAL query reaches local handler and generates an answer via SLM."""
         query = "Why is the ocean blue?"
         self.mock_classifier.classify_with_raw.return_value = ("LOCAL", "LOCAL")
         self.mock_slm.generate.return_value = (
@@ -42,7 +41,6 @@ class TestRouterUnit(unittest.TestCase):
         self.mock_slm.generate.assert_called_once()
 
     def test_command_query_reaches_command_handler(self):
-        """2. COMMAND query generates dynamic natural confirmation via SLM."""
         query = "Turn the garden sprinkler on for 15 minutes."
         self.mock_classifier.classify_with_raw.return_value = ("COMMAND", "COMMAND")
         self.mock_slm.generate.return_value = (
@@ -59,7 +57,6 @@ class TestRouterUnit(unittest.TestCase):
         self.mock_slm.generate.assert_called_once()
 
     def test_cloud_query_reaches_cloud_handler(self):
-        """3. CLOUD query reaches cloud handler and does not invoke SLM generation."""
         query = "Create a detailed 3000-word research report on AI employment."
         self.mock_classifier.classify_with_raw.return_value = ("CLOUD", "CLOUD")
 
@@ -69,11 +66,9 @@ class TestRouterUnit(unittest.TestCase):
         self.assertEqual(result["handler"], "Cloud LLM")
         self.assertEqual(result["processing_type"], "cloud")
         self.assertIn("Cloud LLM routing selected", result["response"])
-        # SLM generation should NOT be called for cloud tasks
         self.mock_slm.generate.assert_not_called()
 
     def test_router_preserves_original_query(self):
-        """4. Router preserves original query accurately."""
         query = "   What is the speed of light?   "
         self.mock_classifier.classify_with_raw.return_value = ("LOCAL", "LOCAL")
         self.mock_slm.generate.return_value = "299,792,458 m/s"
@@ -83,7 +78,6 @@ class TestRouterUnit(unittest.TestCase):
         self.assertEqual(result["query"], "What is the speed of light?")
 
     def test_router_returns_valid_structured_result(self):
-        """5. Router returns valid structured result for all paths."""
         self.mock_classifier.classify_with_raw.return_value = ("LOCAL", "LOCAL")
         self.mock_slm.generate.return_value = "Test response"
         res = self.router.route("Test query")
@@ -99,7 +93,6 @@ class TestRouterUnit(unittest.TestCase):
         self.assertTrue(required_keys.issubset(res.keys()))
 
     def test_arbitrary_command_handled_dynamically(self):
-        """6. Arbitrary command queries are handled dynamically by the SLM."""
         query = "Launch the calculator application."
         self.mock_classifier.classify_with_raw.return_value = ("COMMAND", "COMMAND")
         self.mock_slm.generate.return_value = (
@@ -113,7 +106,8 @@ class TestRouterUnit(unittest.TestCase):
         self.assertIn("Calculator has been launched", res["response"])
 
     def test_no_arbitrary_shell_execution_possible(self):
-        """7. Verify no dangerous system execution modules or calls are used."""
+        # Security test: ensure no subprocess or shell calls exist in routing files
+
         for filename in ["commands.py", "router.py"]:
             file_path = Path(__file__).resolve().parent.parent / filename
             if file_path.exists():
