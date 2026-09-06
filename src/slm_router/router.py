@@ -187,10 +187,10 @@ class Router:
             "result": cloud_result.get("response", ""),
             "success": cloud_result.get("success", True),
             "mode": cloud_result.get("mode", "LIVE"),
-            "model": cloud_result.get("model", getattr(self.cloud, "model_name", "gemini-2.5-flash")),
+            "model": cloud_result.get("model", getattr(self.cloud, "model_name", "gemini-3.6-flash")),
             "details": {
                 "provider": cloud_result.get("provider"),
-                "target_model": cloud_result.get("target_model", getattr(self.cloud, "model_name", "gemini-2.5-flash")),
+                "target_model": cloud_result.get("target_model", getattr(self.cloud, "model_name", "gemini-3.6-flash")),
                 "complexity": cloud_result.get("complexity_assessment"),
                 "classification_token": raw_output,
                 "mode": cloud_result.get("mode", "LIVE"),

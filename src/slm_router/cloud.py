@@ -28,7 +28,7 @@ class CloudHandler:
         # Reload env in case it changed at runtime
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY", "") if api_key is None else api_key
-        self.model_name = model_name or os.getenv("CLOUD_MODEL", "gemini-2.5-flash")
+        self.model_name = model_name or os.getenv("CLOUD_MODEL", "gemini-3.6-flash")
         self.provider = provider
 
         # Resolve mode: live vs mock

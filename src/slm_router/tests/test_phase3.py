@@ -14,7 +14,7 @@ from slm_router.router import Router
 class TestPhase3CloudAndRouter(unittest.TestCase):
 
     def test_mock_cloud_handler_default(self):
-        handler = CloudHandler(api_key="", mode="", model_name="gemini-2.5-flash")
+        handler = CloudHandler(api_key="", mode="", model_name="gemini-3.6-flash")
         self.assertEqual(handler.mode, "mock")
         self.assertEqual(handler.get_api_status(), "Not Configured")
 
@@ -22,8 +22,16 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
         self.assertTrue(res["success"])
         self.assertEqual(res["mode"], "MOCK")
         self.assertEqual(res["handler"], "Cloud LLM")
-        self.assertEqual(res["model"], "gemini-2.5-flash")
+        self.assertEqual(res["model"], "gemini-3.6-flash")
         self.assertIn("Cloud LLM routing selected", res["response"])
+
+    def test_default_cloud_model_is_gemini_3_6_flash(self):
+        handler = CloudHandler(api_key="", mode="mock", model_name=None)
+        # Should default to gemini-3.6-flash
+        self.assertEqual(handler.model_name, "gemini-3.6-flash")
+        res = handler.handle("Explain black holes.")
+        self.assertEqual(res["model"], "gemini-3.6-flash")
+
 
     def test_mock_cloud_handler_explicit_mode(self):
         handler = CloudHandler(api_key="dummy-key", mode="mock")
@@ -53,7 +61,7 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
         self.assertIn("Authentication Error", res["response"])
 
     def test_live_cloud_handler_success_mocked_gemini(self):
-        handler = CloudHandler(api_key="valid-mock-key", mode="live", model_name="gemini-2.5-flash")
+        handler = CloudHandler(api_key="valid-mock-key", mode="live", model_name="gemini-3.6-flash")
 
         mock_response_obj = MagicMock()
         mock_response_obj.text = "Live synthesized response from Gemini."
@@ -66,7 +74,8 @@ class TestPhase3CloudAndRouter(unittest.TestCase):
             res = handler.handle("Draft a corporate strategy.")
             self.assertTrue(res["success"])
             self.assertEqual(res["mode"], "LIVE")
-            self.assertEqual(res["model"], "gemini-2.5-flash")
+            self.assertEqual(res["model"], "gemini-3.6-flash")
+
             self.assertEqual(res["response"], "Live synthesized response from Gemini.")
 
     def test_router_measured_timings(self):

@@ -1,8 +1,11 @@
 import json
+from pathlib import Path
 
+# Resolve dataset directory relative to script location
+DATA_DIR = Path(__file__).resolve().parent / "data"
+INPUT_FILE = DATA_DIR / "capability_dataset.jsonl"
+OUTPUT_FILE = DATA_DIR / "capability_labeled.jsonl"
 
-INPUT_FILE = "data/capability_dataset.jsonl"
-OUTPUT_FILE = "data/capability_labeled.jsonl"
 
 
 def main():

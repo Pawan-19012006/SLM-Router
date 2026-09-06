@@ -1,6 +1,8 @@
 from slm_router.model import SLM
 import json
 import os
+from pathlib import Path
+
 
 
 QUERIES = [
@@ -802,12 +804,14 @@ QUERIES = [
 
 def main():
 
-    print("Loading SmolLM2...")
+    print("Loading SLM...")
     slm = SLM()
 
-    os.makedirs("data", exist_ok=True)
+    data_dir = Path(__file__).resolve().parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = "data/capability_dataset.jsonl"
+    output_file = data_dir / "capability_dataset.jsonl"
+
 
     with open(output_file, "w", encoding="utf-8") as f:
 

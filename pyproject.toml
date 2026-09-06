@@ -1,7 +1,7 @@
 [project]
 name = "slm-router"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local AI Request Classification & Intelligent 3-Way Router"
 readme = "README.md"
 authors = [
     { name = "Pawan Eswaran", email = "pawaneswaran19012006@gmail.com" }
@@ -18,9 +18,7 @@ dependencies = [
 [tool.uv]
 package = true
 
-[project.scripts]
-slm-router = "slm_router:main"
-
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+

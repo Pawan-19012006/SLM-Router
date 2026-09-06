@@ -1,17 +1,30 @@
+import torch
+from typing import Optional
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct" #model name from huggingface
+MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"  # model name from huggingface
+
+
+def get_default_device() -> torch.device:
+    """Safely detect the best available compute device with priority: CUDA -> MPS -> CPU."""
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
 
 
 class SLM:
-    def __init__(self):
-        print("Loading SLM...") #just a smaall loading template
+    def __init__(self, device: Optional[torch.device] = None):
+        self.device = torch.device(device) if device is not None else get_default_device()
+        print(f"Loading SLM on device: {self.device}...")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME) #importing the tokenizer
-        self.model = AutoModelForCausalLM.from_pretrained(MODEL_NAME) #importing the model
+        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+        self.model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+        self.model.to(self.device)
 
-        print("SLM loaded.")
+        print(f"SLM loaded on {self.device}.")
 
     def generate(self, prompt=None, messages=None, max_new_tokens=100, do_sample=False, **kwargs):
         if messages is None:
@@ -27,6 +40,9 @@ class SLM:
             return_tensors="pt",
             return_dict=True
         )
+
+        # Move all input tensors to the model's device
+        inputs = {k: v.to(self.device) if hasattr(v, "to") else v for k, v in inputs.items()}
 
         outputs = self.model.generate(
             **inputs,
