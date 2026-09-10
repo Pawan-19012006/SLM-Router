@@ -1,5 +1,7 @@
 # SLM Router
 
+[![SLM Router Demo](https://img.youtube.com/vi/Isrp2F3n6u0/maxresdefault.jpg)](https://youtu.be/Isrp2F3n6u0)
+
 > Local AI Request Classification & Intelligent 3-Way Dispatch.
 
 SLM Router classifies incoming natural language requests on-device using a Small Language Model (SLM) and automatically routes each query to the optimal execution path: answering locally on-device, generating a safe simulated command confirmation, or offloading complex workloads to Google Gemini.
